@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    font-family: 'Barlow', sans-serif;
+  }
+
+  html {
+    font-family: 'Barlow', sans-serif;
+  }
+
+  body {
+    @apply bg-gray-100 dark:bg-zinc-950 text-gray-900 dark:text-white min-h-screen;
+  }
+
+  *, *::before, *::after {
+    @apply box-border;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #C8102E;
+    border-radius: 3px;
+  }
+}
+
+/* ===========================
+   PRINT / PDF STYLES (Global)
+   Must be outside @layer to avoid Angular scoping
+   =========================== */
+@media print {
+  /* Page setup - no margins for full page */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  /* Hide sidebar, header, overlay, sticky bar */
+  app-header,
+  #sidebar,
+  #topbar,
+  #overlay,
+  #preview-toggle-btn,
+  #preview-panel > .sticky,
+  main > .sticky {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Reset body */
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Reset app-root host */
+  app-root {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Reset the main flex layout - make it a single block */
+  app-root > div,
+  .flex.pt-14,
+  .pt-14 {
+    display: block !important;
+    padding-top: 0 !important;
+    min-height: auto !important;
+    width: 100% !important;
+  }
+
+  /* Preview panel - full width */
+  #preview-panel,
+  main {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+    flex: none !important;
+  }
+
+  /* Hide the "Live Preview - Updates as you type" bar */
+  .tracking-widest.uppercase.text-center {
+    display: none !important;
+  }
+
+  /* The padding container around the sheet */
+  .p-4, .lg\:p-8 {
+    padding: 0 !important;
+  }
+
+  .flex.justify-center {
+    display: block !important;
+  }
+
+  /* The GAINS sheet itself - full width, no shadow */
+  .max-w-3xl {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Ensure 2-column grid stays in print */
+  .sm\:grid-cols-2 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Ensure border-r stays */
+  .sm\:border-r {
+    border-right-width: 1px !important;
+  }
+
+  /* Ensure background colors print correctly */
+  .bg-zinc-900 {
+    background-color: #18181b !important;
+  }
+
+  .bg-brand-red {
+    background-color: #C8102E !important;
+  }
+
+  .bg-white {
+    background-color: #ffffff !important;
+  }
+
+  .border-brand-red {
+    border-color: #C8102E !important;
+  }
+
+  /* Text colors for print */
+  .text-white { color: #ffffff !important; }
+  .text-red-400 { color: #f87171 !important; }
+  .text-red-500 { color: #ef4444 !important; }
+  .text-zinc-300 { color: #d4d4d8 !important; }
+  .text-zinc-400 { color: #a1a1aa !important; }
+  .text-zinc-600 { color: #52525b !important; }
+  .text-zinc-900 { color: #18181b !important; }
+
+  /* Prevent page breaks inside sections */
+  .relative.p-6 {
+    break-inside: avoid;
+  }
+
+  /* Ghost letter visibility in print */
+  .ghost-letter {
+    opacity: 0.07 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

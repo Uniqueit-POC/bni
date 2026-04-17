@@ -1,0 +1,596 @@
+<app-header [theme]="theme" [previewOpen]="previewOpen"
+  (toggleTheme)="toggleTheme()" (toggleMobilePreview)="toggleMobilePreview()"
+  (downloadPdf)="downloadPDF()"></app-header>
+
+<div class="flex pt-14 min-h-screen" [class.dark]="theme === 'dark'">
+  <!-- SIDEBAR FORM -->
+  <aside id="sidebar"
+    class="w-full lg:w-96 xl:w-[420px] flex-shrink-0 bg-white dark:bg-zinc-950 border-r border-gray-200 dark:border-zinc-800 overflow-y-auto h-[calc(100vh-3.5rem)] fixed lg:sticky top-14 left-0 z-40 lg:z-auto transition-transform duration-300"
+    [class.-translate-x-full]="previewOpen" (input)="queueAutosave()" (change)="queueAutosave()">
+    <div class="p-5 space-y-8">
+      <!-- YOUR PROFILE -->
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 bg-brand-red flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+            </svg>
+          </div>
+          <div>
+            <div class="font-semibold tracking-widest uppercase text-sm">Your Profile</div>
+            <div class="text-xs dark:text-zinc-400 text-gray-500">Basic info &amp; contact details</div>
+          </div>
+        </div>
+
+        <!-- Photo Upload -->
+        <div class="mb-4">
+          <label
+            class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-2">Profile
+            Photo</label>
+          <div
+            class="border-2 border-dashed dark:border-zinc-700 border-gray-300 rounded p-6 text-center cursor-pointer hover:border-brand-red transition-colors relative"
+            (click)="photoInput.click()">
+            <img *ngIf="avatarUrl" [src]="avatarUrl" class="w-16 h-16 rounded-full mx-auto object-cover mb-2" />
+            <ng-container *ngIf="!avatarUrl">
+              <svg class="w-8 h-8 mx-auto dark:text-zinc-500 text-gray-400 mb-1" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0118.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <div class="text-xs dark:text-zinc-500 text-gray-400">Click to upload photo</div>
+              <div class="text-xs dark:text-zinc-600 text-gray-400 mt-0.5">JPG or PNG — square crop works best</div>
+            </ng-container>
+            <input #photoInput type="file" accept="image/*" class="hidden" (change)="handlePhoto($event)" />
+          </div>
+          <div *ngIf="avatarUrl" class="mt-2 text-center">
+            <button (click)="removePhoto()" class="text-xs text-red-500 hover:text-red-700 underline">Remove
+              Photo</button>
+          </div>
+          <div class="text-xs dark:text-zinc-500 text-gray-400 mt-1">Replaces the initials circle on the sheet</div>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Full
+              Name</label>
+            <input type="text" [(ngModel)]="form.name"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="Your full name" />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Job
+              Title &amp; Company</label>
+            <input type="text" [(ngModel)]="form.title"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="Title · Company" />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Tagline</label>
+            <input type="text" [(ngModel)]="form.tagline"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="Your personal brand statement" />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">BNI
+              Chapter Name</label>
+            <input type="text" [(ngModel)]="form.chapter"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="Chapter name" />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Member
+              Since (Year)</label>
+            <input type="text" [(ngModel)]="form.year"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="2019" />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Email</label>
+            <input type="email" [(ngModel)]="form.email"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="your@email.com" />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Phone</label>
+            <input type="text" [(ngModel)]="form.phone"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="+1 (555) 000-0000" />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Website</label>
+            <input type="text" [(ngModel)]="form.website"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="yourwebsite.com" />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">LinkedIn</label>
+            <input type="text" [(ngModel)]="form.linkedin"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="linkedin.com/in/yourprofile" />
+          </div>
+        </div>
+      </section>
+
+      <!-- GAINS SECTIONS -->
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 bg-brand-red flex items-center justify-center font-display text-white text-lg">G</div>
+          <div>
+            <div class="font-semibold tracking-widest uppercase text-sm">Goals</div>
+            <div class="text-xs dark:text-zinc-400 text-gray-500">Where are you headed?</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Description</label>
+            <textarea [(ngModel)]="form.goals" rows="4"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors resize-none"></textarea>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Tags
+              (comma separated)</label>
+            <input type="text" [(ngModel)]="form.goalsTags"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="Tag1, Tag2, Tag3" />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 bg-brand-red flex items-center justify-center font-display text-white text-lg">A</div>
+          <div>
+            <div class="font-semibold tracking-widest uppercase text-sm">Accomplishments</div>
+            <div class="text-xs dark:text-zinc-400 text-gray-500">What have you achieved?</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Description</label>
+            <textarea [(ngModel)]="form.acc" rows="4"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors resize-none"></textarea>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Tags
+              (comma separated)</label>
+            <input type="text" [(ngModel)]="form.accTags"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="Tag1, Tag2, Tag3" />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 bg-brand-red flex items-center justify-center font-display text-white text-lg">I</div>
+          <div>
+            <div class="font-semibold tracking-widest uppercase text-sm">Interests</div>
+            <div class="text-xs dark:text-zinc-400 text-gray-500">Beyond the office</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Description</label>
+            <textarea [(ngModel)]="form.int" rows="4"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors resize-none"></textarea>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Tags
+              (comma separated)</label>
+            <input type="text" [(ngModel)]="form.intTags"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="Tag1, Tag2, Tag3" />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 bg-brand-red flex items-center justify-center font-display text-white text-lg">N</div>
+          <div>
+            <div class="font-semibold tracking-widest uppercase text-sm">Networks</div>
+            <div class="text-xs dark:text-zinc-400 text-gray-500">Your communities &amp; associations</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Description</label>
+            <textarea [(ngModel)]="form.net" rows="4"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors resize-none"></textarea>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Tags
+              (comma separated)</label>
+            <input type="text" [(ngModel)]="form.netTags"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="Tag1, Tag2, Tag3" />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 bg-brand-red flex items-center justify-center font-display text-white text-lg">S</div>
+          <div>
+            <div class="font-semibold tracking-widest uppercase text-sm">Skills</div>
+            <div class="text-xs dark:text-zinc-400 text-gray-500">What you bring to the table</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Description</label>
+            <textarea [(ngModel)]="form.skills" rows="4"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors resize-none"></textarea>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 mb-1.5">Tags
+              (comma separated)</label>
+            <input type="text" [(ngModel)]="form.skillsTags"
+              class="w-full dark:bg-zinc-800 bg-gray-100 dark:text-white text-gray-900 border dark:border-zinc-700 border-gray-300 focus:border-brand-red px-3 py-2 text-sm rounded transition-colors"
+              placeholder="Tag1, Tag2, Tag3" />
+          </div>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <!-- OVERLAY for mobile -->
+  <div id="overlay" class="fixed inset-0 bg-black/60 z-30 hidden lg:hidden" [class.hidden]="!previewOpen"
+    (click)="closeMobilePreview()"></div>
+
+  <!-- Mobile Preview Modal -->
+  <div *ngIf="previewOpen" class="fixed inset-0 z-40 lg:hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-zinc-950 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-4 border-b dark:border-zinc-800 border-gray-200 flex justify-between items-center">
+        <h3 class="font-semibold dark:text-white text-gray-900">Live Preview</h3>
+        <button (click)="closeMobilePreview()"
+          class="text-gray-500 hover:text-gray-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <div #mobilePdfContent class="text-sm">
+          <!-- Mobile Preview Content - Same as desktop for PDF consistency -->
+          <div class="bg-zinc-900 text-white px-6 pt-8 pb-6 relative overflow-hidden">
+            <div class="absolute right-2 top-0 font-display text-white opacity-5"
+              style="font-size:6rem;line-height:1;pointer-events:none;user-select:none;">G</div>
+            <div class="flex items-center gap-4">
+              <!-- Avatar -->
+              <div class="flex-shrink-0">
+                <div class="w-16 h-16 rounded-full bg-brand-red flex items-center justify-center overflow-hidden">
+                  <img *ngIf="avatarUrl" [src]="avatarUrl" class="w-full h-full object-cover" />
+                  <span *ngIf="!avatarUrl" class="font-display text-white text-xl tracking-wider">{{ initials }}</span>
+                </div>
+              </div>
+              <!-- Info -->
+              <div class="profile-info flex-1 min-w-0 flex flex-col justify-center">
+                <div class="text-xs font-semibold tracking-widest uppercase text-red-400 mb-1">
+                  BNI · {{ form.chapter }} · Member Since {{ form.year }}
+                </div>
+                <h1 class="font-display text-3xl tracking-wider leading-none text-white mb-1">{{ form.name | uppercase
+                  }}</h1>
+                <div class="text-xs text-zinc-300 mb-2">{{ form.title }}</div>
+                <div class="text-red-400 italic font-semibold text-sm leading-snug">"{{ form.tagline }}"</div>
+
+                <!-- Contact row -->
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 text-xs text-zinc-300">
+                  <div class="contact-item flex items-center gap-1">
+                    <svg class="w-3 h-3 text-zinc-400 flex-shrink-0" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    {{ form.email }}
+                  </div>
+                  <div class="contact-item flex items-center gap-1">
+                    <svg class="w-3 h-3 text-zinc-400 flex-shrink-0" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    {{ form.phone }}
+                  </div>
+                  <div class="contact-item flex items-center gap-1">
+                    <svg class="w-3 h-3 text-zinc-400 flex-shrink-0" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    </svg>
+                    {{ form.website }}
+                  </div>
+                  <div class="contact-item flex items-center gap-1">
+                    <svg class="w-3 h-3 text-zinc-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                      <path
+                        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                    {{ form.linkedin }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GAINS Grid for Mobile -->
+          <div class="space-y-4">
+            <!-- G -->
+            <div class="border-b dark:border-zinc-800 border-gray-200 pb-3">
+              <div class="flex items-center gap-2 mb-2">
+                <div
+                  class="w-6 h-6 bg-brand-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  G</div>
+                <h3 class="font-bold dark:text-white text-gray-900 text-sm">Goals</h3>
+                <span class="text-xs dark:text-zinc-400 text-gray-500">Where I'm Headed</span>
+              </div>
+              <p class="text-xs dark:text-zinc-300 text-gray-700 mb-2">{{ form.goals }}</p>
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let tag of tags(form.goalsTags)"
+                  class="inline-block bg-brand-red text-white text-xs px-2 py-0.5 rounded">{{ tag }}</span>
+              </div>
+            </div>
+
+            <!-- A -->
+            <div class="border-b dark:border-zinc-800 border-gray-200 pb-3">
+              <div class="flex items-center gap-2 mb-2">
+                <div
+                  class="w-6 h-6 bg-brand-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  A</div>
+                <h3 class="font-bold dark:text-white text-gray-900 text-sm">Accomplishments</h3>
+                <span class="text-xs dark:text-zinc-400 text-gray-500">What I've Achieved</span>
+              </div>
+              <p class="text-xs dark:text-zinc-300 text-gray-700 mb-2">{{ form.acc }}</p>
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let tag of tags(form.accTags)"
+                  class="inline-block bg-brand-red text-white text-xs px-2 py-0.5 rounded">{{ tag }}</span>
+              </div>
+            </div>
+
+            <!-- I -->
+            <div class="border-b dark:border-zinc-800 border-gray-200 pb-3">
+              <div class="flex items-center gap-2 mb-2">
+                <div
+                  class="w-6 h-6 bg-brand-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  I</div>
+                <h3 class="font-bold dark:text-white text-gray-900 text-sm">Interests</h3>
+                <span class="text-xs dark:text-zinc-400 text-gray-500">Beyond the Office</span>
+              </div>
+              <p class="text-xs dark:text-zinc-300 text-gray-700 mb-2">{{ form.int }}</p>
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let tag of tags(form.intTags)"
+                  class="inline-block bg-brand-red text-white text-xs px-2 py-0.5 rounded">{{ tag }}</span>
+              </div>
+            </div>
+
+            <!-- N -->
+            <div class="border-b dark:border-zinc-800 border-gray-200 pb-3">
+              <div class="flex items-center gap-2 mb-2">
+                <div
+                  class="w-6 h-6 bg-brand-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  N</div>
+                <h3 class="font-bold dark:text-white text-gray-900 text-sm">Networks</h3>
+                <span class="text-xs dark:text-zinc-400 text-gray-500">My Connections</span>
+              </div>
+              <p class="text-xs dark:text-zinc-300 text-gray-700 mb-2">{{ form.net }}</p>
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let tag of tags(form.netTags)"
+                  class="inline-block bg-brand-red text-white text-xs px-2 py-0.5 rounded">{{ tag }}</span>
+              </div>
+            </div>
+
+            <!-- S -->
+            <div class="pb-3">
+              <div class="flex items-center gap-2 mb-2">
+                <div
+                  class="w-6 h-6 bg-brand-red rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  S</div>
+                <h3 class="font-bold dark:text-white text-gray-900 text-sm">Skills</h3>
+                <span class="text-xs dark:text-zinc-400 text-gray-500">What I Bring to the Table</span>
+              </div>
+              <p class="text-xs dark:text-zinc-300 text-gray-700 mb-2">{{ form.skills }}</p>
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let tag of tags(form.skillsTags)"
+                  class="inline-block bg-brand-red text-white text-xs px-2 py-0.5 rounded">{{ tag }}</span>
+              </div>
+            </div>
+          </div>
+
+          <app-footer [chapter]="form.chapter"></app-footer>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW PANEL -->
+  <main id="preview-panel" class="flex-1 overflow-y-auto bg-slate-100 dark:bg-zinc-900">
+    <div
+      class="sticky top-0 z-10 bg-zinc-200 dark:bg-zinc-800 text-center py-2 text-xs font-semibold tracking-widest uppercase dark:text-zinc-400 text-gray-500 border-b dark:border-zinc-700 border-gray-300">
+      Live Preview — Updates as you type
+    </div>
+
+    <div class="p-4 lg:p-8 flex justify-center">
+      <!-- THE GAINS SHEET - This is what will be converted to PDF -->
+      <div #pdfContent class="w-full max-w-3xl shadow-2xl" [class.bg-white]="theme === 'light'"
+        [class.bg-zinc-900]="theme === 'dark'" style="font-family:'Barlow',sans-serif;">
+        <!-- HEADER SECTION -->
+        <div class="bg-zinc-900 text-white px-8 pt-10 pb-8 relative overflow-hidden">
+          <div class="absolute right-4 top-0 font-display text-white opacity-5"
+            style="font-size:12rem;line-height:1;pointer-events:none;user-select:none;">G</div>
+          <div class="flex items-center gap-6">
+            <!-- Avatar -->
+            <div class="flex-shrink-0">
+              <div class="w-24 h-24 rounded-full bg-brand-red flex items-center justify-center overflow-hidden">
+                <img *ngIf="avatarUrl" [src]="avatarUrl" class="w-full h-full object-cover" />
+                <span *ngIf="!avatarUrl" class="font-display text-white text-3xl tracking-wider">{{ initials }}</span>
+              </div>
+            </div>
+            <!-- Info -->
+            <div class="profile-info flex-1 min-w-0 flex flex-col justify-center">
+              <div class="text-xs font-semibold tracking-widest uppercase text-red-400 mb-1">
+                BNI · <span>{{ form.chapter }}</span> · Member Since <span>{{ form.year }}</span>
+              </div>
+              <h1 class="font-display text-5xl tracking-wider leading-none text-white mb-1">{{ form.name | uppercase }}
+              </h1>
+              <div class="text-sm text-zinc-300 mb-3">{{ form.title }}</div>
+              <div class="text-red-400 italic font-semibold text-base leading-snug">"{{ form.tagline }}"</div>
+
+              <!-- Contact row -->
+              <div class="flex flex-wrap items-center gap-x-5 gap-y-1 mt-4 text-xs text-zinc-300">
+                <div class="contact-item flex items-center gap-1.5 leading-none">
+                  <svg class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  {{ form.email }}
+                </div>
+                <div class="contact-item flex items-center gap-1.5 leading-none">
+                  <svg class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  {{ form.phone }}
+                </div>
+                <div class="contact-item flex items-center gap-1.5 leading-none">
+                  <svg class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                  </svg>
+                  {{ form.website }}
+                </div>
+                <div class="contact-item flex items-center gap-1.5 leading-none">
+                  <svg class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                  </svg>
+                  {{ form.linkedin }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GAINS BODY -->
+        <div class="bg-white border-t-4 border-brand-red" [class.bg-white]="theme === 'light'"
+          [class.bg-zinc-900]="theme === 'dark'">
+          <div class="px-6 pt-4 pb-2">
+            <div
+              class="text-xs font-semibold tracking-widest uppercase text-zinc-400 border-b border-zinc-200 pb-2 mb-0"
+              [class.text-zinc-400]="theme === 'light'" [class.text-zinc-500]="theme === 'dark'"
+              [class.border-zinc-200]="theme === 'light'" [class.border-zinc-700]="theme === 'dark'">My GAINS Profile
+            </div>
+          </div>
+
+          <!-- G + A row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-0 border-b border-zinc-100">
+            <!-- Goals -->
+            <div class="relative p-6 border-r-0 sm:border-r border-zinc-100 overflow-hidden"
+              [class.border-zinc-100]="theme === 'light'" [class.border-zinc-700]="theme === 'dark'">
+              <div class="ghost-letter" style="color:#C8102E;">G</div>
+              <div class="text-xs font-semibold tracking-widest uppercase text-red-500 mb-1">G · Goals</div>
+              <h3 class="text-xl font-bold text-zinc-900 mb-3" [class.text-zinc-900]="theme === 'light'"
+                [class.text-white]="theme === 'dark'">Where I'm Headed</h3>
+              <p class="text-sm text-zinc-600 leading-relaxed mb-4" [class.text-zinc-600]="theme === 'light'"
+                [class.text-zinc-300]="theme === 'dark'">{{ form.goals }}</p>
+              <div class="flex flex-wrap gap-1.5">
+                <span *ngFor="let tag of tags(form.goalsTags)"
+                  class="pdf-tag inline-flex items-center leading-none whitespace-nowrap bg-brand-red text-white text-xs px-2.5 py-1 font-medium">{{ tag }}</span>
+              </div>
+            </div>
+            <!-- Accomplishments -->
+            <div class="relative p-6 overflow-hidden">
+              <div class="ghost-letter" style="color:#C8102E;">A</div>
+              <div class="text-xs font-semibold tracking-widest uppercase text-red-500 mb-1">A · Accomplishments</div>
+              <h3 class="text-xl font-bold text-zinc-900 mb-3" [class.text-zinc-900]="theme === 'light'"
+                [class.text-white]="theme === 'dark'">What I've Achieved</h3>
+              <p class="text-sm text-zinc-600 leading-relaxed mb-4" [class.text-zinc-600]="theme === 'light'"
+                [class.text-zinc-300]="theme === 'dark'">{{ form.acc }}</p>
+              <div class="flex flex-wrap gap-1.5">
+                <span *ngFor="let tag of tags(form.accTags)"
+                  class="pdf-tag inline-flex items-center leading-none whitespace-nowrap bg-brand-red text-white text-xs px-2.5 py-1 font-medium">{{ tag }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- I + N row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-0 border-b border-zinc-100"
+            [class.border-zinc-100]="theme === 'light'" [class.border-zinc-700]="theme === 'dark'">
+            <!-- Interests -->
+            <div class="relative p-6 border-r-0 sm:border-r border-zinc-100 overflow-hidden"
+              [class.border-zinc-100]="theme === 'light'" [class.border-zinc-700]="theme === 'dark'">
+              <div class="ghost-letter" style="color:#C8102E;">I</div>
+              <div class="text-xs font-semibold tracking-widest uppercase text-red-500 mb-1">I · Interests</div>
+              <h3 class="text-xl font-bold text-zinc-900 mb-3" [class.text-zinc-900]="theme === 'light'"
+                [class.text-white]="theme === 'dark'">Beyond the Office</h3>
+              <p class="text-sm text-zinc-600 leading-relaxed mb-4" [class.text-zinc-600]="theme === 'light'"
+                [class.text-zinc-300]="theme === 'dark'">{{ form.int }}</p>
+              <div class="flex flex-wrap gap-1.5">
+                <span *ngFor="let tag of tags(form.intTags)"
+                  class="pdf-tag inline-flex items-center leading-none whitespace-nowrap border border-zinc-300 text-zinc-700 text-xs px-2.5 py-1 font-medium"
+                  [class.border-zinc-300]="theme === 'light'" [class.border-zinc-600]="theme === 'dark'"
+                  [class.text-zinc-700]="theme === 'light'" [class.text-zinc-300]="theme === 'dark'">{{ tag }}</span>
+              </div>
+            </div>
+            <!-- Networks -->
+            <div class="relative p-6 overflow-hidden">
+              <div class="ghost-letter" style="color:#C8102E;">N</div>
+              <div class="text-xs font-semibold tracking-widest uppercase text-red-500 mb-1">N · Networks</div>
+              <h3 class="text-xl font-bold text-zinc-900 mb-3" [class.text-zinc-900]="theme === 'light'"
+                [class.text-white]="theme === 'dark'">My Connections</h3>
+              <p class="text-sm text-zinc-600 leading-relaxed mb-4" [class.text-zinc-600]="theme === 'light'"
+                [class.text-zinc-300]="theme === 'dark'">{{ form.net }}</p>
+              <div class="flex flex-wrap gap-1.5">
+                <span *ngFor="let tag of tags(form.netTags)"
+                  class="pdf-tag inline-flex items-center leading-none whitespace-nowrap border border-zinc-300 text-zinc-700 text-xs px-2.5 py-1 font-medium"
+                  [class.border-zinc-300]="theme === 'light'" [class.border-zinc-600]="theme === 'dark'"
+                  [class.text-zinc-700]="theme === 'light'" [class.text-zinc-300]="theme === 'dark'">{{ tag }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- S: SKILLS full row -->
+          <div class="relative p-6 overflow-hidden border-b border-zinc-100" [class.border-zinc-100]="theme === 'light'"
+            [class.border-zinc-700]="theme === 'dark'">
+            <div class="ghost-letter" style="font-size:8rem;color:#C8102E;">S</div>
+            <div class="text-xs font-semibold tracking-widest uppercase text-red-500 mb-1">S · Skills</div>
+            <h3 class="text-xl font-bold text-zinc-900 mb-3" [class.text-zinc-900]="theme === 'light'"
+              [class.text-white]="theme === 'dark'">What I Bring to the Table</h3>
+            <p class="text-sm text-zinc-600 leading-relaxed mb-4" [class.text-zinc-600]="theme === 'light'"
+              [class.text-zinc-300]="theme === 'dark'">{{ form.skills }}</p>
+            <div class="flex flex-wrap gap-1.5">
+              <span *ngFor="let tag of tags(form.skillsTags)"
+                class="pdf-tag inline-flex items-center leading-none whitespace-nowrap bg-brand-red text-white text-xs px-2.5 py-1 font-medium">{{ tag }}</span>
+            </div>
+          </div>
+
+          <!-- FOOTER -->
+          <app-footer [chapter]="form.chapter"></app-footer>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

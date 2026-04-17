@@ -1,0 +1,91 @@
+<app-header
+  [theme]="theme"
+  [previewOpen]="previewOpen"
+  (toggleTheme)="toggleTheme()"
+  (toggleMobilePreview)="toggleMobilePreview()"
+  (print)="print()"
+></app-header>
+
+<div class="flex pt-14 min-h-screen bg-slate-50 dark:bg-zinc-950">
+  <aside
+    id="sidebar"
+    class="w-full lg:w-96 xl:w-[420px] flex-shrink-0 bg-white dark:bg-zinc-950 border-r border-gray-200 dark:border-zinc-800 overflow-y-auto h-[calc(100vh-3.5rem)] fixed lg:sticky top-14 left-0 z-40 lg:z-auto transition-transform duration-300 lg:translate-x-0"
+    [class.-translate-x-full]="previewOpen"
+  >
+    <div class="p-6 space-y-8">
+      <div class="space-y-4">
+        <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Profile details</div>
+        <div class="grid gap-3">
+          <label class="space-y-2">
+            <span class="text-[11px] uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">Full name</span>
+            <input type="text" name="name" [(ngModel)]="form.name" class="w-full rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-white" placeholder="Your full name" />
+          </label>
+          <label class="space-y-2">
+            <span class="text-[11px] uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">Title</span>
+            <input type="text" name="title" [(ngModel)]="form.title" class="w-full rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-white" placeholder="Job title · Company" />
+          </label>
+          <label class="space-y-2">
+            <span class="text-[11px] uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-400">Chapter</span>
+            <input type="text" name="chapter" [(ngModel)]="form.chapter" class="w-full rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-white" placeholder="BNI chapter name" />
+          </label>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Contact</div>
+        <div class="grid gap-3">
+          <input type="email" name="email" [(ngModel)]="form.email" class="w-full rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-white" placeholder="your@email.com" />
+          <input type="text" name="phone" [(ngModel)]="form.phone" class="w-full rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-white" placeholder="Phone" />
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Goals</div>
+        <textarea name="goals" rows="4" [(ngModel)]="form.goals" class="w-full rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-white resize-none" placeholder="Share your goals"></textarea>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 lg:ml-[420px] xl:ml-[420px] p-4 lg:p-8">
+    <div class="sticky top-14 z-10 mb-4 rounded-xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 p-4 backdrop-blur">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div class="text-xs uppercase tracking-[0.35em] text-zinc-500 dark:text-zinc-400">Preview</div>
+          <h1 class="text-2xl font-semibold text-zinc-900 dark:text-white">BNI Member Profile</h1>
+        </div>
+        <div class="text-sm text-zinc-600 dark:text-zinc-300">Live updates as you type</div>
+      </div>
+    </div>
+
+    <section class="space-y-6">
+      <div class="rounded-3xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-8 shadow-lg">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div class="text-xs uppercase tracking-[0.35em] text-red-500">BNI</div>
+            <h2 class="mt-3 text-4xl font-bold text-zinc-950 dark:text-white">{{ form.name || 'Your Name' }}</h2>
+            <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{{ form.title || 'Your Title · Company' }}</p>
+          </div>
+          <div class="space-y-1 rounded-3xl bg-zinc-100 dark:bg-zinc-900 px-5 py-4 text-sm text-zinc-700 dark:text-zinc-300">
+            <div><span class="font-semibold">Chapter:</span> {{ form.chapter || 'Chapter Name' }}</div>
+            <div><span class="font-semibold">Member since:</span> {{ form.year || '2024' }}</div>
+          </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 lg:grid-cols-2">
+          <div class="space-y-4">
+            <div class="text-xs uppercase tracking-[0.35em] text-zinc-500 dark:text-zinc-400">Contact</div>
+            <p class="text-sm text-zinc-700 dark:text-zinc-300">Email: {{ form.email || 'example@email.com' }}</p>
+            <p class="text-sm text-zinc-700 dark:text-zinc-300">Phone: {{ form.phone || '+1 (555) 000-0000' }}</p>
+          </div>
+          <div class="space-y-4">
+            <div class="text-xs uppercase tracking-[0.35em] text-zinc-500 dark:text-zinc-400">Goals</div>
+            <p class="text-sm text-zinc-700 dark:text-zinc-300">{{ form.goals || 'Add your goals to see them here.' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <app-footer [chapter]="form.chapter"></app-footer>
+    </section>
+  </main>
+</div>
+`, "utf8");'

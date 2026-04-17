@@ -1,0 +1,158 @@
+/* Ghost letter watermark behind GAINS sections */
+.ghost-letter {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 9rem;
+  line-height: 1;
+  opacity: 0.07;
+  position: absolute;
+  right: 0.5rem;
+  top: -1rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C8102E;
+  border-radius: 3px;
+}
+
+/* Input focus states */
+input,
+textarea,
+select {
+  outline: none;
+}
+
+/* ===========================
+   PDF / Print Styles
+   =========================== */
+@media print {
+  /* Hide everything except the preview sheet */
+  app-header,
+  #sidebar,
+  #topbar,
+  #overlay,
+  .sticky,
+  .lg\\:hidden,
+  [id="preview-toggle-btn"] {
+    display: none !important;
+  }
+
+  /* Reset body */
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Reset the main flex layout */
+  .flex.pt-14.min-h-screen {
+    display: block !important;
+    padding-top: 0 !important;
+    min-height: auto !important;
+  }
+
+  /* Preview panel - full width, no background */
+  #preview-panel,
+  main {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  /* Hide the "Live Preview" sticky bar */
+  #preview-panel > .sticky,
+  main > .sticky {
+    display: none !important;
+  }
+
+  /* The preview container - remove padding and centering */
+  #preview-panel > div:last-child,
+  main > div:last-child {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  /* The GAINS sheet itself - full width, no shadow */
+  #preview-panel .max-w-3xl,
+  main .max-w-3xl,
+  [class*="max-w-3xl"] {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Ensure the 2-column grid stays as grid in print */
+  .grid.grid-cols-1.sm\\:grid-cols-2 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Ensure colors print correctly */
+  .bg-zinc-900 {
+    background-color: #18181b !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .bg-brand-red,
+  [class*="bg-brand-red"] {
+    background-color: #C8102E !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .text-white {
+    color: white !important;
+  }
+
+  .text-red-400 {
+    color: #f87171 !important;
+  }
+
+  .text-red-500 {
+    color: #ef4444 !important;
+  }
+
+  .text-zinc-300 {
+    color: #d4d4d8 !important;
+  }
+
+  .text-zinc-400 {
+    color: #a1a1aa !important;
+  }
+
+  .text-zinc-600 {
+    color: #52525b !important;
+  }
+
+  /* Page setup */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  /* Prevent page breaks inside sections */
+  .relative.p-6 {
+    break-inside: avoid;
+  }
+}

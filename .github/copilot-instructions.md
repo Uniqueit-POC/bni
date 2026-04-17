@@ -1,0 +1,4 @@
+- This workspace contains an Angular application scaffolded in `g:\angular\bni`.
+- Use `npm install` to install dependencies and `npx ng serve` to run the dev server.
+- Use `npx ng build` to compile the application for production.
+- If you want to convert an existing index page to Angular, add the page content into `src/app/app.html` and bind it in `src/app/app.ts`.
